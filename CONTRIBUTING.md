@@ -1,159 +1,80 @@
 # Contributing to CONductOR
 
-Thank you for considering contributing to CONductOR! This guide will help you get started.
+Thank you for considering contributing to CONductOR! This document outlines the process and guidelines.
 
-## Code of Conduct
+## Development Setup
 
-By participating in this project, you agree to maintain a respectful, inclusive, and professional environment for all contributors.
+1. **Prerequisites**
+   - Windows 10/11
+   - PowerShell 7+
+   - Microsoft Edge
+   - Git
 
-## How to Contribute
+2. **Clone and Install**
+   ```powershell
+   git clone https://github.com/POWDER-RANGER/CONductOR.git
+   cd CONductOR
+   Install-Module Selenium -Scope CurrentUser
+   Install-Module Pester -Scope CurrentUser
+   ```
 
-### Reporting Bugs
+## Making Changes
 
-1. **Search existing issues** to avoid duplicates
-2. **Use the bug report template** when creating new issues
-3. **Include detailed information**:
-   - Steps to reproduce
-   - Expected vs. actual behavior
-   - PowerShell version and OS details
-   - Error messages or logs
-
-### Suggesting Features
-
-1. **Check existing feature requests** to avoid duplicates
-2. **Use the feature request template**
-3. **Explain the problem** your feature solves
-4. **Describe your proposed solution**
-5. **Consider implementation complexity**
-
-## Development Workflow
-
-### Setting Up Development Environment
-
-```powershell
-# Clone the repository
-git clone https://github.com/POWDER-RANGER/CONductOR.git
-cd CONductOR
-
-# Install Pester for testing
-Install-Module -Name Pester -Force -SkipPublisherCheck -MinimumVersion 5.0
-
-# Install PSScriptAnalyzer for linting
-Install-Module -Name PSScriptAnalyzer -Force -SkipPublisherCheck
-```
-
-### Making Changes
-
-1. **Create a feature branch**:
+1. **Fork and Branch**
    ```powershell
    git checkout -b feature/your-feature-name
    ```
 
-2. **Make your changes** following our coding standards
+2. **Write Tests**
+   - Add Pester tests in `tests/` directory
+   - Aim for 80%+ code coverage
+   - Run tests: `Invoke-Pester -Path ./tests`
 
-3. **Write tests** for new functionality
+3. **Code Style**
+   - Follow PowerShell best practices
+   - Use approved verbs (Get-, Set-, New-, etc.)
+   - Comment complex logic
+   - Use meaningful variable names
 
-4. **Run tests locally**:
-   ```powershell
-   Invoke-Pester -Path ./tests
-   ```
+4. **Commit Messages**
+   - Use conventional commits format
+   - Examples: `feat: add Claude support`, `fix: browser timeout`, `docs: update README`
 
-5. **Run linter**:
-   ```powershell
-   Invoke-ScriptAnalyzer -Path ./src -Recurse
-   ```
+## Pull Request Process
 
-6. **Commit your changes** with a descriptive message:
-   ```powershell
-   git commit -m "feat: Add browser session persistence"
-   ```
+1. Update documentation if adding features
+2. Ensure all tests pass
+3. Update CHANGELOG.md
+4. Submit PR with clear description
+5. Wait for review and address feedback
 
-### Pull Request Process
+## Adding New AI Services
 
-1. **Update documentation** for any new features
-2. **Ensure all tests pass** locally
-3. **Update CHANGELOG.md** with your changes
-4. **Push your branch** and create a PR
-5. **Fill out the PR template** completely
-6. **Respond to code review** feedback
+1. Create handler in `handlers/` directory
+2. Implement standard interface:
+   - `Initialize-Service`
+   - `Send-Query`
+   - `Get-Response`
+3. Add routing logic to intent engine
+4. Update README with new service
+5. Add integration tests
 
-## Coding Standards
+## Testing
 
-### PowerShell Style Guide
+```powershell
+# Run all tests
+Invoke-Pester -Path ./tests
 
-- **Indentation**: 4 spaces (no tabs)
-- **Line length**: Maximum 120 characters
-- **Naming conventions**:
-  - Functions: `PascalCase` with approved verbs (`Get-`, `Set-`, `Invoke-`)
-  - Variables: `$camelCase`
-  - Constants: `$UPPER_CASE`
-- **Comments**: Use `#` for single-line, `<# #>` for multi-line
-- **Error handling**: Always use `try/catch` for external operations
-
-### Module Structure
-
-```
-src/
-├── Core/           # Core orchestration logic
-├── Services/       # AI service handlers
-├── UI/             # User interface components
-└── Utils/          # Utility functions
-
-tests/              # Pester tests mirroring src/ structure
-```
-
-### Testing Requirements
-
-- **Minimum 70% code coverage** for new code
-- **All tests must pass** before PR approval
-- **Use descriptive test names**: `It 'Should route browser commands to BrowserController'`
-- **Mock external dependencies** (AI services, browser automation)
-- **Test error conditions** explicitly
-
-### Documentation Requirements
-
-- **Comment-Based Help** for all functions:
-  ```powershell
-  <#
-  .SYNOPSIS
-      Brief description of function
-  .DESCRIPTION
-      Detailed description
-  .PARAMETER ParamName
-      Parameter description
-  .EXAMPLE
-      Get-Intent -UserInput "Navigate to example.com"
-  #>
-  ```
-
-- **Update README.md** for user-facing changes
-- **Update ARCHITECTURE.md** for structural changes
-
-## Commit Message Guidelines
-
-We follow [Conventional Commits](https://www.conventionalcommits.org/):
-
-- `feat:` New feature
-- `fix:` Bug fix
-- `docs:` Documentation changes
-- `test:` Adding or updating tests
-- `refactor:` Code refactoring
-- `perf:` Performance improvements
-- `chore:` Maintenance tasks
-
-**Examples**:
-```
-feat: Add retry logic to service calls
-fix: Resolve browser selector timeout issue
-docs: Update installation instructions
-test: Add coverage for IntentRouter error handling
+# Run with coverage
+$config = New-PesterConfiguration
+$config.CodeCoverage.Enabled = $true
+Invoke-Pester -Configuration $config
 ```
 
 ## Questions?
 
-Feel free to:
-- Open a [Discussion](https://github.com/POWDER-RANGER/CONductOR/discussions)
-- Comment on relevant issues
-- Reach out to maintainers
+Open an issue or discussion on GitHub.
 
-Thank you for contributing to CONductOR! 🚀
+## License
+
+By contributing, you agree that your contributions will be licensed under the project's license (MIT).

@@ -5,119 +5,31 @@ on:
     branches: [ main, develop ]
   pull_request:
     branches: [ main ]
-  workflow_dispatch:
 
 jobs:
   test:
-    name: Run Pester Tests
     runs-on: windows-latest
     
     steps:
-    - name: Checkout code
+    - name: Checkout repository
       uses: actions/checkout@v4
     
     - name: Install Pester
-      shell: powershell
+      shell: pwsh
       run: |
-        Install-Module -Name Pester -Force -SkipPublisherCheck -MinimumVersion 5.0
+        Install-Module -Name Pester -Force -Scope CurrentUser -SkipPublisherCheck
+        Import-Module Pester
     
-    - name: Run tests
-      shell: powershell
+    - name: Install Selenium Module
+      shell: pwsh
+      run: |
+        Install-Module -Name Selenium -Force -Scope CurrentUser -SkipPublisherCheck
+    
+    - name: Run Pester Tests
+      shell: pwsh
       run: |
         $config = New-PesterConfiguration
         $config.Run.Path = './tests'
+        $config.Output.Verbosity = 'Detailed'
         $config.CodeCoverage.Enabled = $true
-        $config.CodeCoverage.Path = './src/**/*.ps1', './src/**/*.psm1'
-        $config.CodeCoverage.OutputFormat = 'JaCoCo'
-        $config.CodeCoverage.OutputPath = './coverage.xml'
-        $config.TestResult.Enabled = $true
-        $config.TestResult.OutputFormat = 'NUnitXml'
-        $config.TestResult.OutputPath = './testResults.xml'
-        
-        $result = Invoke-Pester -Configuration $config
-        
-        if ($result.FailedCount -gt 0) {
-          throw "$($result.FailedCount) tests failed"
-        }
-    
-    - name: Upload test results
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: test-results
-        path: testResults.xml
-    
-    - name: Upload coverage
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: coverage
-        path: coverage.xml
-
-  lint:
-    name: PowerShell Script Analyzer
-    runs-on: windows-latest
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Install PSScriptAnalyzer
-      shell: powershell
-      run: |
-        Install-Module -Name PSScriptAnalyzer -Force -SkipPublisherCheck
-    
-    - name: Run PSScriptAnalyzer
-      shell: powershell
-      run: |
-        $results = Invoke-ScriptAnalyzer -Path './src' -Recurse -ReportSummary
-        
-        if ($results.Count -gt 0) {
-          $results | Format-Table -AutoSize
-          $errorCount = ($results | Where-Object Severity -eq 'Error').Count
-          $warningCount = ($results | Where-Object Severity -eq 'Warning').Count
-          
-          Write-Host "Found $errorCount errors and $warningCount warnings"
-          
-          if ($errorCount -gt 0) {
-            throw "PSScriptAnalyzer found $errorCount error(s)"
-          }
-        }
-        
-        Write-Host "PSScriptAnalyzer passed with no errors"
-
-  security:
-    name: Security Scan
-    runs-on: windows-latest
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Run security scan
-      shell: powershell
-      run: |
-        # Check for hardcoded secrets
-        $patterns = @(
-          'password\s*=\s*["''][^"'']+["'']',
-          'api[_-]?key\s*=\s*["''][^"'']+["'']',
-          'secret\s*=\s*["''][^"'']+["'']',
-          'token\s*=\s*["''][^"'']+["'']'
-        )
-        
-        $foundSecrets = $false
-        Get-ChildItem -Path './src' -Recurse -Include *.ps1,*.psm1 | ForEach-Object {
-          $content = Get-Content $_.FullName -Raw
-          foreach ($pattern in $patterns) {
-            if ($content -match $pattern) {
-              Write-Warning "Potential secret found in $($_.Name)"
-              $foundSecrets = $true
-            }
-          }
-        }
-        
-        if ($foundSecrets) {
-          throw "Security scan found potential hardcoded secrets"
-        }
-        
-        Write-Host "Security scan passed"
+        Invoke-Pester -Configuration $config

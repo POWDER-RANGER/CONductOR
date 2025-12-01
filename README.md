@@ -1,5 +1,10 @@
 # CONductOR
 
+[![CI](https://github.com/POWDER-RANGER/CONductOR/workflows/CI/badge.svg)](https://github.com/POWDER-RANGER/CONductOR/actions)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![PowerShell](https://img.shields.io/badge/PowerShell-7.0+-blue.svg)](https://docs.microsoft.com/powershell/)
+[![Platform](https://img.shields.io/badge/Platform-Windows-lightgrey.svg)](https://www.microsoft.com/windows)
+
 **Windows-native AI orchestration assistant. Multi-service chat, browser automation, and PowerShell control.**
 
 ## Executive Summary
@@ -96,27 +101,43 @@ CONductOR is built as a modular PowerShell application with:
 - CPU: <1% idle, 10-15% during operations
 - Response Times: 2-8 seconds for AI queries, <100ms for local commands
 
-## Legal Considerations
-
-Browser automation may violate Terms of Service for some AI platforms. CONductOR is designed for personal productivity use. For commercial applications, consider using official APIs instead.
-
 ## Contributing
 
-CONductOR's modular architecture makes it easy to contribute:
+Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+CONductOR's modular architecture makes it easy to:
 - Add new AI service handlers
 - Improve intent routing logic
 - Enhance prompt refinement
 - Fix bugs and improve stability
 
-See [SYSTEM-DOCUMENTATION.md](SYSTEM-DOCUMENTATION.md) for technical details.
+## Testing
+
+```powershell
+# Run test suite
+Invoke-Pester -Path ./tests
+
+# Run with coverage
+$config = New-PesterConfiguration
+$config.CodeCoverage.Enabled = $true
+Invoke-Pester -Configuration $config
+```
+
+## Legal Considerations
+
+Browser automation may violate Terms of Service for some AI platforms. CONductOR is designed for personal productivity use. For commercial applications, consider using official APIs instead.
 
 ## License
 
-To be determined
+MIT License - see [LICENSE](LICENSE) for details.
 
 ## Support
 
-For issues, questions, or feature requests, please use the GitHub Issues tab.
+For issues, questions, or feature requests, please use the [GitHub Issues](https://github.com/POWDER-RANGER/CONductOR/issues) tab.
+
+## Author
+
+Built by [Curtis Farrar](https://github.com/POWDER-RANGER) | ORCID: 0009-0008-9273-2458
 
 ---
 
